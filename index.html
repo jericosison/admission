@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Firebase OTP - Working Demo</title>
+</head>
+<body>
+  <h3>Enter Phone Number:</h3>
+  <input id="phoneNumber" type="text" placeholder="+639123456789" />
+  <div id="recaptcha-container"></div>
+  <button id="sendOtpBtn">Send OTP</button>
+
+  <h3>Enter OTP:</h3>
+  <input id="otpCode" type="text" placeholder="Enter OTP" />
+  <button id="verifyBtn">Verify OTP</button>
+
+  <p id="result"></p>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB7HqxV971vmWiJiXnWdaFnMaFx1C1t6s8",
+      authDomain: "psau-admission-system.firebaseapp.com",
+      projectId: "psau-admission-system",
+      storageBucket: "psau-admission-system.appspot.com",
+      messagingSenderId: "522448258958",
+      appId: "1:522448258958:web:994b133a4f7b7f4c1b06df"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    let confirmationResult;
+    const resultBox = document.getElementById("result");
+
+    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      size: 'normal',
+      callback: (response) => {
+        console.log("reCAPTCHA solved");
+      }
+    });
+
+    document.getElementById("sendOtpBtn").addEventListener("click", async () => {
+      const phone = document.getElementById("phoneNumber").value;
+      try {
+        confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
+        resultBox.innerText = "✅ OTP sent to " + phone;
+      } catch (error) {
+        resultBox.innerText = "❌ Error sending OTP: " + error.message;
+        console.error(error);
+      }
+    });
+
+    document.getElementById("verifyBtn").addEventListener("click", async () => {
+      const code = document.getElementById("otpCode").value;
+      try {
+        await confirmationResult.confirm(code);
+        resultBox.innerText = "✅ Phone verified!";
+      } catch (error) {
+        resultBox.innerText = "❌ Invalid OTP: " + error.message;
+        console.error(error);
+      }
+    });
+  </script>
+</body>
+</html>
