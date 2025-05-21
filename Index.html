@@ -45,7 +45,7 @@
       const phone = document.getElementById("phoneNumber").value;
       try {
         confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
-        resultBox.innerText = "✅ OTP sent to " + phone;
+        resultBox.innerText = "✅ OTP sent to " + phone + "\n\nyour verification code kowfal gemwell na: verification code";
       } catch (error) {
         resultBox.innerText = "❌ Error sending OTP: " + error.message;
         console.error(error);
